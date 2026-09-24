@@ -1,0 +1,733 @@
+/* =========================================================
+   ZENITSU CANVAS
+   main.css
+   App / Canvas / Bottom Sheet
+   ========================================================= */
+
+:root {
+  --app-bg: #111;
+  --sheet-bg: rgba(24, 24, 24, 0.96);
+  --sheet-border: rgba(255, 255, 255, 0.10);
+
+  --text: #fff;
+  --muted: #999;
+
+  --control-bg: #292929;
+
+  --sheet-max-height: 30vh;
+  --sheet-min-height: 64px;
+
+  --radius: 12px;
+
+  --fast: 140ms ease;
+  --normal: 220ms ease;
+}
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+
+  margin: 0;
+
+  overflow: hidden;
+
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  background: var(--app-bg);
+  color: var(--text);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+
+/* =========================================================
+   APP
+   ========================================================= */
+
+#app {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   CANVAS WORKSPACE
+   ========================================================= */
+
+.canvas-workspace {
+  position: relative;
+
+  flex: 1;
+  min-height: 0;
+
+  display: grid;
+  place-items: center;
+
+  overflow: hidden;
+
+  padding: 16px;
+
+  background-color: #111;
+
+  background-image:
+    radial-gradient(
+      rgba(255, 255, 255, 0.18) 1px,
+      transparent 1px
+    );
+
+  background-size: 16px 16px;
+}
+
+.canvas-workspace canvas {
+  display: block;
+
+  max-width: 100%;
+  max-height: 100%;
+
+  box-shadow:
+    0 8px 35px rgba(0, 0, 0, 0.45);
+
+  transition:
+    box-shadow var(--normal);
+}
+
+
+/* =========================================================
+   BOTTOM SHEET
+   ========================================================= */
+
+.bottom-sheet {
+  position: relative;
+
+  z-index: 20;
+
+  flex-shrink: 0;
+
+  width: 100%;
+
+  height: auto;
+  max-height: var(--sheet-max-height);
+
+  min-height: var(--sheet-min-height);
+
+  display: flex;
+  flex-direction: column;
+
+  padding:
+    0
+    8px
+    calc(8px + env(safe-area-inset-bottom));
+
+  background: var(--sheet-bg);
+
+  border-top: 1px solid var(--sheet-border);
+
+  box-shadow:
+    0 -8px 30px rgba(0, 0, 0, 0.22);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  overflow: hidden;
+
+  transition:
+    height var(--normal),
+    max-height var(--normal),
+    border-radius var(--normal);
+}
+
+
+/* =========================================================
+   DRAG HANDLE
+   ========================================================= */
+
+.sheet-drag-area {
+  width: 100%;
+  height: 22px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: grab;
+
+  touch-action: none;
+}
+
+.sheet-drag-area:active {
+  cursor: grabbing;
+}
+
+.sheet-drag-handle {
+  width: 34px;
+  height: 4px;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.28);
+
+  transition:
+    width var(--fast),
+    background var(--fast);
+}
+
+.sheet-drag-area:hover .sheet-drag-handle {
+  width: 42px;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+
+/* =========================================================
+   SHEET HEADER
+   ========================================================= */
+
+.sheet-header {
+  height: 34px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-bottom: 4px;
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+#navigation-view {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+
+  overflow-x: auto;
+
+  white-space: nowrap;
+
+  scrollbar-width: none;
+
+  color: var(--muted);
+
+  font-size: 11px;
+}
+
+#navigation-view::-webkit-scrollbar {
+  display: none;
+}
+
+#navigation-view button {
+  flex-shrink: 0;
+
+  padding: 4px 2px;
+
+  border: 0;
+
+  background: transparent;
+  color: var(--muted);
+
+  font: inherit;
+
+  cursor: pointer;
+
+  transition:
+    color var(--fast),
+    opacity var(--fast);
+}
+
+#navigation-view button:hover {
+  color: #fff;
+}
+
+#navigation-view button:last-child {
+  color: #fff;
+  font-weight: 600;
+}
+
+.navigation-separator {
+  flex-shrink: 0;
+
+  margin: 0 5px;
+
+  color: #555;
+}
+
+
+/* =========================================================
+   BACK BUTTON
+   ========================================================= */
+
+.navigation-back {
+  width: 32px;
+  height: 32px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: var(--control-bg);
+  color: #fff;
+
+  cursor: pointer;
+
+  transition:
+    background var(--fast),
+    transform var(--fast),
+    opacity var(--fast);
+}
+
+.navigation-back:hover {
+  background: #353535;
+}
+
+.navigation-back:active {
+  transform: scale(0.92);
+}
+
+.navigation-back.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   TOOLBAR ROOT
+   ========================================================= */
+
+#toolbar-root {
+  flex: 1;
+  min-height: 0;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding: 2px 0 4px;
+
+  scrollbar-width: thin;
+
+  scrollbar-color:
+    rgba(255, 255, 255, 0.18)
+    transparent;
+
+  overscroll-behavior: contain;
+}
+
+
+/* =========================================================
+   MENU LEVEL
+   ========================================================= */
+
+.zenitsu-menu-level {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  padding: 2px 0;
+
+  scrollbar-width: none;
+
+  animation:
+    menu-enter 160ms ease both;
+}
+
+.zenitsu-menu-level::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* =========================================================
+   MAIN MENU BUTTON
+   ========================================================= */
+
+.zenitsu-menu-button {
+  width: 64px;
+  min-width: 64px;
+
+  height: 58px;
+
+  flex-shrink: 0;
+
+  display: flex !important;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 3px !important;
+
+  padding: 5px !important;
+
+  border: 0;
+
+  border-radius: 9px !important;
+
+  background: transparent;
+  color: #fff;
+
+  cursor: pointer;
+
+  transition:
+    background var(--fast),
+    transform var(--fast);
+}
+
+.zenitsu-menu-button:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.zenitsu-menu-button:active {
+  background: rgba(255, 255, 255, 0.12);
+
+  transform: scale(0.94);
+}
+
+.zenitsu-menu-button .material-symbols-rounded {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.zenitsu-menu-button span:last-child {
+  font-size: 10px;
+  line-height: 1;
+
+  color: #bbb;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   SAVE MENU
+   ========================================================= */
+
+.zenitsu-save-menu {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+
+  padding: 4px 2px;
+}
+
+.save-section {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.save-title {
+  font-size: 11px;
+  font-weight: 600;
+
+  color: #999;
+}
+
+.save-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 6px;
+}
+
+.save-option,
+.save-quality button,
+.save-button {
+  min-height: 38px;
+
+  border: 1px solid #333;
+  border-radius: 8px;
+
+  background: #222;
+  color: #fff;
+
+  font: inherit;
+  font-size: 11px;
+
+  cursor: pointer;
+
+  transition:
+    background var(--fast),
+    border-color var(--fast),
+    transform var(--fast);
+}
+
+.save-option:hover,
+.save-quality button:hover {
+  background: #2d2d2d;
+}
+
+.save-option:active,
+.save-quality button:active,
+.save-button:active {
+  transform: scale(0.98);
+}
+
+.save-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+}
+
+.save-quality {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 6px;
+}
+
+.save-option.active,
+.save-quality button.active {
+  background: #333;
+  border-color: #666;
+}
+
+.save-button {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  background: #fff;
+  color: #111;
+
+  border-color: #fff;
+}
+
+.save-button:hover {
+  background: #eee;
+}
+
+
+/* =========================================================
+   ANIMATION
+   ========================================================= */
+
+@keyframes menu-enter {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+  .canvas-workspace {
+    padding: 10px;
+  }
+
+  .bottom-sheet {
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .zenitsu-menu-button {
+    width: 60px;
+    min-width: 60px;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .bottom-sheet,
+  .navigation-back,
+  .zenitsu-menu-button,
+  .save-option,
+  .save-quality button,
+  .save-button {
+    transition: none;
+  }
+
+  .zenitsu-menu-level {
+    animation: none;
+  }
+}
+/* =====================================================
+   CONTEXT TOOLBAR
+   ===================================================== */
+
+.zenitsu-context-toolbar {
+  position: fixed;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+
+  gap: 2px;
+  padding: 4px;
+
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 10px;
+
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.2);
+
+  transform-origin: center;
+
+  animation:
+    context-toolbar-in
+    120ms ease-out;
+}
+
+.zenitsu-context-toolbar[hidden] {
+  display: none;
+}
+
+.zenitsu-context-toolbar button {
+  width: 36px;
+  height: 36px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: transparent;
+  color: #fff;
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+
+  transition:
+    background 120ms ease,
+    transform 120ms ease;
+}
+
+.zenitsu-context-toolbar button:hover {
+  background: #2a2a2a;
+}
+
+.zenitsu-context-toolbar button:active {
+  transform: scale(0.9);
+}
+
+.zenitsu-context-toolbar
+.material-symbols-rounded {
+  font-size: 20px;
+  line-height: 1;
+}
+
+@keyframes context-toolbar-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+  .zenitsu-context-toolbar {
+    gap: 1px;
+    padding: 3px;
+    border-radius: 9px;
+  }
+
+  .zenitsu-context-toolbar button {
+    width: 34px;
+    height: 34px;
+  }
+
+  .zenitsu-context-toolbar
+  .material-symbols-rounded {
+    font-size: 19px;
+  }
+}
+
+
+/* =====================================================
+   REDUCED MOTION
+   ===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .zenitsu-context-toolbar {
+    animation: none;
+  }
+
+  .zenitsu-context-toolbar button {
+    transition: none;
+  }
+}
