@@ -1,0 +1,144 @@
+/* =========================================================
+   ZENITSU GLOBAL RESET & POLISH
+   ========================================================= */
+
+/* --- 1. RESET & BOX-SIZING --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+
+  /* Hapus Webkit Tap Highlight (bayangan abu-abu/biru saat di-tap di HP) */
+  -webkit-tap-highlight-color: transparent;
+
+  /* Hapus outline default browser yang kaku & ganti dengan style fokus bersih */
+  outline: none;
+}
+
+/* Biar scroll halaman lebih smooth */
+html {
+  color-scheme: dark light;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  line-height: 1.5;
+  
+  /* Smoothing font di semua platform (Retina/macOS/Windows) */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+
+  /* Mencegah gesture tarik refreshing bawaan browser HP (jika dibutuhkan app) */
+  overscroll-behavior-y: none;
+}
+
+
+/* --- 2. GPU-ACCELERATED TRANSITIONS UNTUK ELEMEN INTERAKTIF --- */
+/* Hanya diterapkan ke tombol, input, link, dan elemen interaktif agar tidak makan RAM/GPU berlebih */
+button,
+a,
+input,
+select,
+textarea,
+[role="button"],
+.menu-button,
+.menu-icon-button,
+.menu-color,
+.menu-check,
+.save-option {
+  will-change: transform, opacity;
+  transition: 
+    transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+
+/* --- 3. PEMBERSIHAN DEFAULT BROWSER LAINNYA --- */
+
+/* Reset Form Controls (Tombol, Input, Select, Textarea) */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+}
+
+/* Hapus styling tombol bawaan iOS/Android */
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+/* Hapus panah spinner pada Input Number (Chrome, Safari, Edge, Opera) */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hapus panah spinner pada Input Number (Firefox) */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Hapus tombol silang bawaan input search & clear di Edge/IE */
+input::-ms-clear,
+input::-ms-reveal {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Mencegah gambar & SVG keluar dari container atau bikin overflow tak sengaja */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Mencegah teks terpilih secara tak sengaja pada elemen UI/Tombol saat di-drag atau di-click cepat */
+button,
+label,
+.sheet-drag-area,
+.zenitsu-chip,
+.material-symbols-rounded {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Aksesibilitas Fokus yang Rapi (Hanya muncul saat navigasi pakai Keyboard/Tab) */
+:focus-visible {
+  outline: 2px solid var(--bento-accent, #38bdf8);
+  outline-offset: 2px;
+}
+
+
+/* --- 4. REDUCED MOTION SUPPORT --- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

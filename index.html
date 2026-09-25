@@ -25,6 +25,7 @@
     rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"
   >
+<link rel="stylesheet" href="css/reset.css">
 
   <!-- Zenitsu CSS -->
   <link rel="stylesheet" href="css/main.css">
@@ -34,6 +35,23 @@
 <body>
 
   <main id="app">
+<!-- Floating Dynamic Island Chip -->
+<div class="zenitsu-chip-container">
+  <div id="zenitsu-chip" class="zenitsu-chip" role="button" tabindex="0">
+    <!-- State Kecil -->
+    <span class="chip-collapsed-text">Zenitsu</span>
+
+    <!-- State Besar -->
+    <div class="chip-expanded-content">
+      <div class="chip-title">
+        Zenitsu <span class="chip-author">• Created by Guntur Hidayat</span>
+      </div>
+      <p class="chip-description">
+        Designed as a lightweight and fast editor for crafting memes, mini posters, and other simple layout tasks.
+      </p>
+    </div>
+  </div>
+</div>
 
     <!-- Canvas -->
 
@@ -389,122 +407,121 @@
         }
       );
 
+/* ===================================================
+   SHEET DRAG (GPU ACCELERATED)
+   =================================================== */
 
-      /* ===================================================
-         SHEET DRAG
-         =================================================== */
+let dragging = false;
+let startY = 0;
+let currentTranslateY = 0;
+let dragTranslateY = 0;
+let rafId = null;
 
-      let dragging = false;
-      let dragStartY = 0;
-      let startHeight = 0;
+// Hitung jarak geser (misal: selisih max height dan min height)
+function getMinY() {
+  return 0; // Posisi terbuka penuh (Expanded)
+}
 
+function getMaxY() {
+  const max = window.innerHeight * 0.30; // 30vh
+  const min = 64; // min height
+  return max - min; // Posisi tertutup/collapsed
+}
 
-      function getMaxSheetHeight() {
-        return window.innerHeight * 0.30;
-      }
+function updateSheetPosition() {
+  // Gunakan translate3d agar diproses hardware/GPU
+  sheet.style.transform = `translate3d(0, ${dragTranslateY}px, 0)`;
+  rafId = null;
+}
 
+dragArea.addEventListener("pointerdown", event => {
+  dragging = true;
+  startY = event.clientY;
 
-      function getSheetHeight() {
-        return sheet.getBoundingClientRect().height;
-      }
+  // Matikan transisi CSS saat ditarik oleh jari/mouse
+  sheet.style.transition = "none";
 
+  dragArea.setPointerCapture(event.pointerId);
+});
 
-      function setSheetHeight(height) {
-        const min =
-          64;
+dragArea.addEventListener("pointermove", event => {
+  if (!dragging) return;
 
-        const max =
-          getMaxSheetHeight();
+  const deltaY = event.clientY - startY;
+  let nextY = currentTranslateY + deltaY;
 
-        const next =
-          Math.max(
-            min,
-            Math.min(
-              height,
-              max
-            )
-          );
+  // Limit/Clamping batas atas & bawah
+  const minY = getMinY();
+  const maxY = getMaxY();
+  
+  // Efek membal (rubber band) sedikit saat ditarik melebihi batas
+  if (nextY < minY) {
+    nextY = minY + (nextY - minY) * 0.2;
+  } else if (nextY > maxY) {
+    nextY = maxY + (nextY - maxY) * 0.2;
+  }
 
-        sheet.style.height =
-          `${next}px`;
+  dragTranslateY = nextY;
 
-        resizeCanvas();
-      }
+  // Render via RequestAnimationFrame agar sinkron dengan Hz layar (60Hz/120Hz)
+  if (!rafId) {
+    rafId = requestAnimationFrame(updateSheetPosition);
+  }
+});
 
+function endSheetDrag() {
+  if (!dragging) return;
+  dragging = false;
 
-      dragArea.addEventListener(
-        "pointerdown",
-        event => {
-          dragging = true;
+  if (rafId) {
+    cancelAnimationFrame(rafId);
+    rafId = null;
+  }
 
-          dragStartY =
-            event.clientY;
+  // Kembalikan transisi CSS halus saat dilepas
+  sheet.style.transition = "transform 220ms cubic-bezier(0.16, 1, 0.3, 1)";
 
-          startHeight =
-            getSheetHeight();
+  const maxY = getMaxY();
 
-          sheet.style.transition =
-            "none";
+  /*
+   * Snap Logic:
+   * Jika ditarik lebih dari 50% ke bawah -> Snap ke Collapsed (Tutup)
+   * Jika tidak -> Snap ke Expanded (Buka)
+   */
+  if (dragTranslateY > maxY * 0.5) {
+    currentTranslateY = maxY;
+  } else {
+    currentTranslateY = 0;
+  }
 
-          dragArea.setPointerCapture(
-            event.pointerId
-          );
-        }
-      );
+  sheet.style.transform = `translate3d(0, ${currentTranslateY}px, 0)`;
 
+  // Canvas HANYA di-resize SEKALI setelah animasi snap selesai
+  setTimeout(() => {
+    resizeCanvas();
+  }, 220);
+}
 
-      dragArea.addEventListener(
-        "pointermove",
-        event => {
-          if (!dragging) return;
+dragArea.addEventListener("pointerup", endSheetDrag);
+dragArea.addEventListener("pointercancel", endSheetDrag);
+/* ===================================================
+   DYNAMIC ISLAND CHIP TOGGLE
+   =================================================== */
+const chip = document.getElementById("zenitsu-chip");
 
-          const delta =
-            dragStartY -
-            event.clientY;
+if (chip) {
+  chip.addEventListener("click", (e) => {
+    e.stopPropagation();
+    chip.classList.toggle("expanded");
+  });
 
-          setSheetHeight(
-            startHeight + delta
-          );
-        }
-      );
-
-
-      function endSheetDrag() {
-        if (!dragging) return;
-
-        dragging = false;
-
-        sheet.style.transition = "";
-
-        const height =
-          getSheetHeight();
-
-        const max =
-          getMaxSheetHeight();
-
-        /*
-         * Snap sederhana:
-         * dekat minimum -> minimum
-         * selain itu -> maksimum
-         */
-
-        if (height < max * 0.55) {
-          setSheetHeight(64);
-        } else {
-          setSheetHeight(max);
-        }
-      }
-
-
-      dragArea.addEventListener(
-        "pointerup",
-        endSheetDrag
-      );
-
-      dragArea.addEventListener(
-        "pointercancel",
-        endSheetDrag
-      );
+  // Tutup kembali jika mengklik area luar (misal canvas)
+  document.addEventListener("click", (e) => {
+    if (!chip.contains(e.target) && chip.classList.contains("expanded")) {
+      chip.classList.remove("expanded");
+    }
+  });
+}
 
 
       /* ===================================================
